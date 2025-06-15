@@ -1,0 +1,17 @@
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\bin\Debug\net9.0\OnLineCourse.Service.deps.json
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\bin\Debug\net9.0\OnLineCourse.Service.dll
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\bin\Debug\net9.0\OnLineCourse.Service.pdb
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\OnLineCourse.Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\OnLineCourse.Service.AssemblyInfoInputs.cache
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\OnLineCourse.Service.AssemblyInfo.cs
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\OnLineCourse.Service.csproj.CoreCompileInputs.cache
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\OnLineCourse.Service.dll
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\refint\OnLineCourse.Service.dll
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\OnLineCourse.Service.pdb
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\ref\OnLineCourse.Service.dll
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\OnLineCourse.Service.csproj.AssemblyReference.cache
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\bin\Debug\net9.0\OnLineCourse.Core.dll
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\bin\Debug\net9.0\OnLineCourse.Data.dll
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\bin\Debug\net9.0\OnLineCourse.Core.pdb
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\bin\Debug\net9.0\OnLineCourse.Data.pdb
+C:\Users\Marwan Aljaml\source\repos\OnLineCourse.Service\obj\Debug\net9.0\OnLineCo.5FC6A363.Up2Date
