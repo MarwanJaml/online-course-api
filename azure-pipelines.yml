@@ -1,0 +1,65 @@
+# ASP.NET Pipeline for Self-Hosted Agent
+# This runs on your local machine instead of Microsoft-hosted agents
+
+trigger:
+- main
+
+# Use your self-hosted agent pool instead of Microsoft-hosted
+pool:
+  name: 'Default'  # This is the default self-hosted pool name
+  # Or specify your custom pool name: name: 'MyAgentPool'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+# Note: .NET SDK should already be installed on your local machine
+# If not, install it manually or uncomment the UseDotNet task
+
+# - task: UseDotNet@2
+#   displayName: 'Install .NET SDK'
+#   inputs:
+#     packageType: 'sdk'
+#     version: '8.0.x'
+
+# Restore packages
+- task: DotNetCoreCLI@2
+  displayName: 'Restore packages'
+  inputs:
+    command: 'restore'
+    projects: '$(solution)'
+
+# Build solution
+- task: DotNetCoreCLI@2
+  displayName: 'Build solution'
+  inputs:
+    command: 'build'
+    projects: '$(solution)'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+# Run tests
+- task: DotNetCoreCLI@2
+  displayName: 'Run tests'
+  inputs:
+    command: 'test'
+    projects: '**/*Tests.csproj'
+    arguments: '--configuration $(buildConfiguration) --no-build'
+  continueOnError: true
+
+# Publish application
+- task: DotNetCoreCLI@2
+  displayName: 'Publish application'
+  inputs:
+    command: 'publish'
+    projects: '$(solution)'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+
+# Publish artifacts
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
