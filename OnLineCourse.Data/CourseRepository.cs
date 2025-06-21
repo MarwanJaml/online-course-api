@@ -53,7 +53,65 @@ namespace OnLineCourse.Data
                 .ToListAsync();
         }
 
-        public async Task<List<CourseDetailModel>> GetCourseDetailAsync(int categoryId)
+        // Fixed method: Changed parameter from categoryId to courseId and return type to single CourseDetailModel
+        public async Task<CourseDetailModel> GetCourseDetailAsync(int courseId)
+        {
+            return await _dbContext.Courses
+                .Include(c => c.Category)
+                .Include(c => c.Reviews)
+                    .ThenInclude(r => r.User)
+                .Include(c => c.SessionDetails)
+                .Where(c => c.CourseId == courseId) // Changed from CategoryId to CourseId
+                .Select(c => new CourseDetailModel
+                {
+                    CourseId = c.CourseId,
+                    Title = c.Title,
+                    Description = c.Description,
+                    Price = c.Price,
+                    CourseType = c.CourseType,
+                    SeatsAvailable = c.SeatsAvailable,
+                    Duration = c.Duration,
+                    CategoryId = c.CategoryId,
+                    InstructorId = c.InstructorId,
+                    StartDate = c.StartDate,
+                    EndDate = c.EndDate,
+                    Thumbnail = c.Thumbnail,
+                    Category = new CourseCategoryModel
+                    {
+                        CategoryId = c.Category.CategoryId,
+                        CategoryName = c.Category.CategoryName,
+                        Description = c.Category.Description
+                    },
+                    Reviews = c.Reviews.Select(r => new UserReviewModel
+                    {
+                        CourseId = r.CourseId,
+                        ReviewId = r.ReviewId,
+                        UserId = r.UserId,
+                        Rating = r.Rating,
+                        Comments = r.Comments,
+                        ReviewDate = r.ReviewDate
+                    })
+                    .OrderByDescending(r => r.Rating)
+                    .Take(10)
+                    .ToList(),
+                    SessionDetails = c.SessionDetails.Select(sd => new SessionDetailModel
+                    {
+                        SessionId = sd.SessionId,
+                        CourseId = sd.CourseId,
+                        Title = sd.Title,
+                        Description = sd.Description,
+                        VideoUrl = sd.VideoUrl,
+                        VideoOrder = sd.VideoOrder
+                    })
+                    .OrderBy(sd => sd.VideoOrder)
+                    .ToList()
+                })
+                .AsNoTracking()
+                .FirstOrDefaultAsync(); // Changed from ToListAsync() to FirstOrDefaultAsync()
+        }
+
+        // Optional: If you still need a method to get courses by category, add this separate method
+        public async Task<List<CourseDetailModel>> GetCourseDetailsByCategoryAsync(int categoryId)
         {
             return await _dbContext.Courses
                 .Include(c => c.Category)

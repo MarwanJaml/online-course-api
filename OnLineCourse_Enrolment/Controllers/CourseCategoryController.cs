@@ -1,41 +1,42 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OnLineCourse.Service;
 
 namespace OnLineCourse_Enrolment.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class CourseCategoryController : ControllerBase
     {
-        private readonly ICourseCategoryService courseCategoryService;
 
-        public CourseCategoryController(ICourseCategoryService courseCategoryService)
+        private readonly ILogger<CourseCategoryController> _logger;
+        private readonly ICourseCategoryService categoryService;
+
+        public CourseCategoryController(ILogger<CourseCategoryController> logger, ICourseCategoryService categoryService)
         {
-            this.courseCategoryService = courseCategoryService;
+            _logger = logger;
+            this.categoryService = categoryService;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id )
+        public async Task<IActionResult> Get(int id)
         {
-            //when useing .Result thats mean sync not async
-
-            var data = await courseCategoryService.GetCourseCategories();
-            if (data == null )
+            var category = await categoryService.GetByIdAsync(id);
+            //what if the id is not present?
+            if (category == null)
             {
-                return NotFound("No course categories found.");
+                return NotFound();
             }
-            return Ok(data);
+            return Ok(category);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-
-            //when we the list is returned without any spesific resourse , the not found not applicable
-
-            var categories = await courseCategoryService.GetCourseCategories();
-          
+            var categories = await categoryService.GetCourseCategories();
             return Ok(categories);
         }
     }

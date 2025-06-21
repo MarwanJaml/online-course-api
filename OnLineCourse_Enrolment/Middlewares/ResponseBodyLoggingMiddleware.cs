@@ -22,40 +22,27 @@ namespace OnLineCourse_Enrolment.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
+            var originalBodyStream = context.Response.Body;
+            var responseBody = new MemoryStream();
+            context.Response.Body = responseBody;
+
             try
             {
-                // Capture the original response body stream
-                var originalBodyStream = context.Response.Body;
+                await _next(context);
 
-                using (var responseBody = new MemoryStream())
+                // Only log successful responses
+                if (context.Response.StatusCode < 400)
                 {
-                    // Replace the response body stream
-                    context.Response.Body = responseBody;
-
-                    // Continue with the pipeline
-                    await _next(context);
-
-                    // Log response details
-                    _logger.LogInformation("Response: {StatusCode} for {Method} {Path}",
-                        context.Response.StatusCode,
-                        context.Request.Method,
-                        context.Request.Path);
-
-                    // Log response body only for errors or if it's small
-                    if (context.Response.StatusCode >= 400 || responseBody.Length < 1000)
-                    {
-                        await LogResponseBodyAsync(context, responseBody);
-                    }
-
-                    // Copy the response back to the original stream
-                    responseBody.Seek(0, SeekOrigin.Begin);
-                    await responseBody.CopyToAsync(originalBodyStream);
+                    await LogResponseBodyAsync(context, responseBody);
                 }
+
+                responseBody.Seek(0, SeekOrigin.Begin);
+                await responseBody.CopyToAsync(originalBodyStream);
             }
-            catch (Exception ex)
+            finally
             {
-                _logger.LogError(ex, "Error in ResponseLoggingMiddleware");
-                throw; // Re-throw to let other middleware handle it
+                context.Response.Body = originalBodyStream;
+                responseBody.Dispose();
             }
         }
 

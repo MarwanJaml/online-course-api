@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Service\\OnLineCourse.Service.csproj": {}
+    "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Service\\OnLineCourse.Service.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Core\\OnLineCourse.Core.csproj": {
+    "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Core\\OnLineCourse.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Core\\OnLineCourse.Core.csproj",
+        "projectUniqueName": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Core\\OnLineCourse.Core.csproj",
         "projectName": "OnLineCourse.Core",
-        "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Core\\OnLineCourse.Core.csproj",
+        "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Core\\OnLineCourse.Core.csproj",
         "packagesPath": "C:\\Users\\Marwan Aljaml\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Core\\obj\\",
+        "outputPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -93,14 +93,14 @@
         }
       }
     },
-    "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Data\\OnLineCourse.Data.csproj": {
+    "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Data\\OnLineCourse.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Data\\OnLineCourse.Data.csproj",
+        "projectUniqueName": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Data\\OnLineCourse.Data.csproj",
         "projectName": "OnLineCourse.Data",
-        "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Data\\OnLineCourse.Data.csproj",
+        "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Data\\OnLineCourse.Data.csproj",
         "packagesPath": "C:\\Users\\Marwan Aljaml\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Data\\obj\\",
+        "outputPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Data\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -121,8 +121,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Core\\OnLineCourse.Core.csproj": {
-                "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Core\\OnLineCourse.Core.csproj"
+              "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Core\\OnLineCourse.Core.csproj": {
+                "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Core\\OnLineCourse.Core.csproj"
               }
             }
           }
@@ -182,14 +182,14 @@
         }
       }
     },
-    "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Service\\OnLineCourse.Service.csproj": {
+    "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Service\\OnLineCourse.Service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Service\\OnLineCourse.Service.csproj",
+        "projectUniqueName": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Service\\OnLineCourse.Service.csproj",
         "projectName": "OnLineCourse.Service",
-        "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Service\\OnLineCourse.Service.csproj",
+        "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Service\\OnLineCourse.Service.csproj",
         "packagesPath": "C:\\Users\\Marwan Aljaml\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Service\\obj\\",
+        "outputPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Service\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -210,11 +210,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Core\\OnLineCourse.Core.csproj": {
-                "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Core\\OnLineCourse.Core.csproj"
+              "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Core\\OnLineCourse.Core.csproj": {
+                "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Core\\OnLineCourse.Core.csproj"
               },
-              "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Data\\OnLineCourse.Data.csproj": {
-                "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Data\\OnLineCourse.Data.csproj"
+              "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Data\\OnLineCourse.Data.csproj": {
+                "projectPath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Data\\OnLineCourse.Data.csproj"
               }
             }
           }

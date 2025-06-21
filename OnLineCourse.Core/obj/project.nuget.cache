@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "scfNzOmgJnI=",
+  "dgSpecHash": "3AYKbIEBWeE=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Marwan Aljaml\\source\\repos\\OnLineCourse.Core\\OnLineCourse.Core.csproj",
+  "projectFilePath": "C:\\Users\\Marwan Aljaml\\source\\repos\\Online-Course-Project\\OnLineCourse.Core\\OnLineCourse.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Marwan Aljaml\\.nuget\\packages\\azure.core\\1.44.1\\azure.core.1.44.1.nupkg.sha512",
     "C:\\Users\\Marwan Aljaml\\.nuget\\packages\\azure.identity\\1.13.2\\azure.identity.1.13.2.nupkg.sha512",

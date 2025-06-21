@@ -9,6 +9,7 @@ namespace OnLineCourse_Enrolment.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CourseController : ControllerBase
     {
         private readonly ICourseService courseService;
@@ -18,7 +19,10 @@ namespace OnLineCourse_Enrolment.Controllers
             this.courseService = courseService;
         }
 
+        //These 3 get methods are publicly available from our UI, no need to authenticate!
+        // GET: api/Course
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<CourseModel>>> GetAllCoursesAsync()
         {
             var courses = await courseService.GetAllCoursesAsync();

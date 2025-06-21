@@ -12,6 +12,10 @@ using System.Net;
 using OnLineCourse_Enrolment.Middlewares;
 using System.Diagnostics;
 using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.Identity.Web;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +62,15 @@ try
             TelemetryConverter.Traces));
 
     Log.Information("Starting the SmartLearnByKarthik API...");
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+         .AddMicrosoftIdentityWebApi(options =>
+         {
+             builder.Configuration.Bind("AzureAdB2C", options); // ? Use builder.Configuration
+             options.Events = new JwtBearerEvents();
+             // ...
+         },
+         options => { builder.Configuration.Bind("AzureAdB2C", options); }); // ? Use builder.Configuration
+
 
     // Database Configuration with enhanced options
     builder.Services.AddDbContextPool<OnlineCourseDbContext>(options =>
@@ -124,15 +137,30 @@ try
     {
         errorApp.Run(async context =>
         {
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.ContentType = "application/json";
+
             var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
             var exception = exceptionHandlerPathFeature?.Error;
-            var telemetryClient = context.RequestServices.GetRequiredService<TelemetryClient>();
 
-            telemetryClient.TrackException(exception);
-            Log.Error(exception, "Unhandled exception occurred. {ExceptionDetails}", exception?.ToString());
+            // Log the full error
+            Log.Error(exception, "Unhandled exception occurred in {Path}",
+                exceptionHandlerPathFeature?.Path);
 
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            await context.Response.WriteAsync("An unexpected error occurred. Please try again later.");
+            // Return detailed error in development
+            if (app.Environment.IsDevelopment())
+            {
+                await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                {
+                    error = exception?.Message,
+                    stackTrace = exception?.StackTrace,
+                    innerException = exception?.InnerException?.Message
+                }));
+            }
+            else
+            {
+                await context.Response.WriteAsync("An unexpected error occurred");
+            }
         });
     });
 
@@ -140,12 +168,20 @@ try
     app.UseMiddleware<RequestLoggingMiddleware>();
     app.UseMiddleware<ResponseLoggingMiddleware>();
 
+
+
     // API Middlewares
     app.UseCors("default");
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseHttpsRedirection();
+
+
+    #region AD B2C
+    app.UseAuthentication();
     app.UseAuthorization();
+    #endregion  AD B2C
+
     app.MapControllers();
 
     // Auto-open browser
