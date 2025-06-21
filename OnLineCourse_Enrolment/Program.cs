@@ -16,10 +16,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.Identity.Web;
 using System.Text.Json;
+using OnLineCourse_Enrolment.Common;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog
+// Configure Serilog early for bootstrap logging
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
@@ -29,11 +32,13 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    // 1. First verify configuration is loading properly
+    Log.Information("Starting application configuration...");
+
+    // Verify configuration is loading properly
     Log.Information("Configuration sources: {@Sources}",
         builder.Configuration.Sources.Select(s => s.ToString()).ToList());
 
-    // 2. Explicitly check connection string
+    // Explicitly check connection string
     var connectionString = builder.Configuration.GetConnectionString("DbContext");
     if (string.IsNullOrEmpty(connectionString))
     {
@@ -43,8 +48,19 @@ try
 
     #region Service Configuration
 
+    // Health Checks - FIXED: Use builder.Configuration instead of 'configuration'
+    builder.Services.AddHealthChecks()
+        .AddSqlServer(
+            connectionString: connectionString, // Use the verified connection string
+            healthQuery: "SELECT 1;",
+            name: "sqlserver",
+            failureStatus: HealthStatus.Degraded,
+            tags: new[] { "db", "sql" })
+        .AddCheck("Memory", new PrivateMemoryHealthCheck(1024 * 1024 * 1024));
+
     // Configure Application Insights
-    builder.Services.AddApplicationInsightsTelemetry(options => {
+    builder.Services.AddApplicationInsightsTelemetry(options =>
+    {
         options.EnableAdaptiveSampling = false;
         options.EnableDependencyTrackingTelemetryModule = true;
         options.EnablePerformanceCounterCollectionModule = true;
@@ -52,6 +68,7 @@ try
         options.EnableRequestTrackingTelemetryModule = true;
     });
 
+    // Final Serilog configuration
     builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
@@ -61,22 +78,17 @@ try
             context.Configuration["ApplicationInsights:ConnectionString"],
             TelemetryConverter.Traces));
 
-    Log.Information("Starting the SmartLearnByKarthik API...");
+    // Authentication
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-         .AddMicrosoftIdentityWebApi(options =>
-         {
-             builder.Configuration.Bind("AzureAdB2C", options); // ? Use builder.Configuration
-             options.Events = new JwtBearerEvents();
-             // ...
-         },
-         options => { builder.Configuration.Bind("AzureAdB2C", options); }); // ? Use builder.Configuration
+        .AddMicrosoftIdentityWebApi(
+            options => builder.Configuration.Bind("AzureAdB2C", options),
+            options => builder.Configuration.Bind("AzureAdB2C", options));
 
-
-    // Database Configuration with enhanced options
+    // Database Configuration
     builder.Services.AddDbContextPool<OnlineCourseDbContext>(options =>
     {
         options.UseSqlServer(
-            connectionString,  // Using the verified connection string
+            connectionString,
             sqlOptions =>
             {
                 sqlOptions.EnableRetryOnFailure(
@@ -86,15 +98,21 @@ try
                 sqlOptions.CommandTimeout(60);
                 sqlOptions.MigrationsAssembly(typeof(OnlineCourseDbContext).Assembly.FullName);
             });
+
         options.EnableDetailedErrors();
         options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
-        options.LogTo(Console.WriteLine, LogLevel.Information);
+
+        if (builder.Environment.IsDevelopment())
+        {
+            options.LogTo(message => Log.Information("EF Core: {Message}", message),
+                LogLevel.Information);
+        }
     });
 
     // CORS Configuration
-    builder.Services.AddCors(o => o.AddPolicy("default", builder =>
+    builder.Services.AddCors(o => o.AddPolicy("default", policy =>
     {
-        builder.AllowAnyOrigin()
+        policy.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader();
     }));
@@ -103,12 +121,17 @@ try
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    builder.Services.AddAutoMapper(typeof(MappingProfile));
 
     // Application Services
     builder.Services.AddScoped<ICourseCategoryRepository, CourseCategoryRepository>();
     builder.Services.AddScoped<ICourseCategoryService, CourseCategoryService>();
     builder.Services.AddScoped<ICourseRepository, CourseRepository>();
     builder.Services.AddScoped<ICourseService, CourseService>();
+    builder.Services.AddScoped<IVideoRequestRepository, VideoRequestRepository>();
+    builder.Services.AddScoped<IVideoRequestService, VideoRequestService>();
+    builder.Services.AddScoped<IUserClaims, UserClaims>();
+
     #endregion
 
     #region Middleware Pipeline
@@ -120,6 +143,7 @@ try
         var services = scope.ServiceProvider;
         try
         {
+            Log.Information("Testing database connection...");
             var db = services.GetRequiredService<OnlineCourseDbContext>();
             db.Database.OpenConnection();
             db.Database.CloseConnection();
@@ -143,11 +167,8 @@ try
             var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
             var exception = exceptionHandlerPathFeature?.Error;
 
-            // Log the full error
-            Log.Error(exception, "Unhandled exception occurred in {Path}",
-                exceptionHandlerPathFeature?.Path);
+            Log.Error(exception, "Unhandled exception in {Path}", exceptionHandlerPathFeature?.Path);
 
-            // Return detailed error in development
             if (app.Environment.IsDevelopment())
             {
                 await context.Response.WriteAsync(JsonSerializer.Serialize(new
@@ -164,11 +185,9 @@ try
         });
     });
 
-    // Custom Logging Middlewares
+    // Custom Middlewares
     app.UseMiddleware<RequestLoggingMiddleware>();
     app.UseMiddleware<ResponseLoggingMiddleware>();
-
-
 
     // API Middlewares
     app.UseCors("default");
@@ -176,40 +195,67 @@ try
     app.UseSwaggerUI();
     app.UseHttpsRedirection();
 
-
-    #region AD B2C
+    // Authentication
     app.UseAuthentication();
     app.UseAuthorization();
-    #endregion  AD B2C
+
+    // Health Checks
+    app.MapHealthChecks("/health", new HealthCheckOptions
+    {
+        ResponseWriter = HealthCheckResponseWriter.WriteJsonResponse
+    });
+
+    app.MapHealthChecks("/health/live", new HealthCheckOptions
+    {
+        Predicate = _ => false,
+        ResponseWriter = async (context, report) =>
+        {
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(new
+            {
+                status = report.Status.ToString(),
+                description = "Liveness check - the app is up"
+            });
+        }
+    });
+
+    app.MapHealthChecks("/health/ready", new HealthCheckOptions
+    {
+        Predicate = check => check.Tags.Contains("ready"),
+        ResponseWriter = HealthCheckResponseWriter.WriteJsonResponse
+    });
 
     app.MapControllers();
 
-    // Auto-open browser
-    try
+    // Auto-open browser in development
+    if (app.Environment.IsDevelopment())
     {
-        var applicationUrls = app.Urls.Any() ? app.Urls.ToArray()
-                         : new[] { "https://localhost:7045", "http://localhost:5088" };
-
-        var url = applicationUrls.FirstOrDefault(u => u.StartsWith("https")) ??
-                  applicationUrls.FirstOrDefault();
-
-        if (url != null)
+        try
         {
-            var browserUrl = url.Replace("0.0.0.0", "localhost") + "/swagger";
-            Console.WriteLine($"Launching browser at: {browserUrl}");
-            Process.Start(new ProcessStartInfo
+            var applicationUrls = app.Configuration["ASPNETCORE_URLS"]?.Split(';') ??
+                new[] { "https://localhost:7045", "http://localhost:5088" };
+
+            var url = applicationUrls.FirstOrDefault(u => u.StartsWith("https")) ??
+                    applicationUrls.FirstOrDefault();
+
+            if (url != null)
             {
-                FileName = browserUrl,
-                UseShellExecute = true
-            });
+                var browserUrl = url.Replace("0.0.0.0", "localhost") + "/swagger";
+                Log.Information("Launching browser to {Url}", browserUrl);
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = browserUrl,
+                    UseShellExecute = true
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to launch browser");
         }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Failed to launch browser: {ex.Message}");
-    }
 
-    Log.Information("Application startup complete");
+    Log.Information("Application startup complete. Running...");
     app.Run();
     #endregion
 }
