@@ -81,8 +81,8 @@ try
     // Authentication
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddMicrosoftIdentityWebApi(
-            options => builder.Configuration.Bind("AzureAdB2C", options),
-            options => builder.Configuration.Bind("AzureAdB2C", options));
+            options => builder.Configuration.Bind("AzureAd", options),
+            options => builder.Configuration.Bind("AzureAd", options));
 
     // Database Configuration
     builder.Services.AddDbContextPool<OnlineCourseDbContext>(options =>
@@ -130,7 +130,20 @@ try
     builder.Services.AddScoped<ICourseService, CourseService>();
     builder.Services.AddScoped<IVideoRequestRepository, VideoRequestRepository>();
     builder.Services.AddScoped<IVideoRequestService, VideoRequestService>();
+
+
     builder.Services.AddScoped<IUserClaims, UserClaims>();
+    builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+    builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+    builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+    builder.Services.AddScoped<IReviewService, ReviewService>();
+    builder.Services.AddScoped<IEmailNotification, EmailNotification>();
+
+    // Register AzureBlobStorageService
+    builder.Services.AddScoped<IAzureBlobStorageService, AzureBlobStorageService>();
+
+    builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+    builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
     #endregion
 
