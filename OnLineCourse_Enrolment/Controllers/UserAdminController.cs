@@ -9,7 +9,7 @@ namespace OnLineCourse_Enrolment.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserAdminController : ControllerBase
     {
         private readonly ICourseService courseService;
@@ -21,7 +21,7 @@ namespace OnLineCourse_Enrolment.Controllers
 
         // GET: api/Course
         [HttpGet]
-        [RequiredScope(RequiredScopesConfigurationKey = "AzureAdB2C:Scopes:Read")]
+        [RequiredScope(RequiredScopesConfigurationKey = "User.Read")]
         public async Task<ActionResult<List<UserModel>>> GetAllUsers()
         {
             var courses = await courseService.GetAllCoursesAsync();
